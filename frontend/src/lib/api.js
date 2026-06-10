@@ -103,3 +103,34 @@ export async function createCandidate(data) {
   if (!response.ok) throw new Error("Failed to create candidate");
   return response.json();
 }
+
+export async function updateCandidate(id, data) {
+  const response = await fetch(`${API_URL}/api/candidates/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeader(),
+    },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error("Failed to update candidate");
+  return response.json();
+}
+
+export async function deleteCandidate(id) {
+  const response = await fetch(`${API_URL}/api/candidates/${id}`, {
+    method: "DELETE",
+    headers: { ...getAuthHeader() },
+  });
+  if (!response.ok) throw new Error("Failed to delete candidate");
+  return response.json();
+}
+
+export async function updateStatus(id, status) {
+  const response = await fetch(`${API_URL}/api/candidates/${id}/status?status=${status}`, {
+    method: "PATCH",
+    headers: { ...getAuthHeader() },
+  });
+  if (!response.ok) throw new Error("Failed to update status");
+  return response.json();
+}

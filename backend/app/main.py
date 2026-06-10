@@ -72,3 +72,12 @@ app.include_router(candidates_router.router)
 @app.get("/")
 def root():
     return {"message": "TechKraft API is running"}
+
+@app.get("/users")
+def get_users():
+    db = SessionLocal()
+    try:
+        users = db.query(models.User).all()
+        return users
+    finally:
+        db.close()

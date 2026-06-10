@@ -150,3 +150,40 @@ def create_candidate(
     db.commit()
     db.refresh(candidate)
     return schemas.CandidateListItem.model_validate(candidate)
+@router.put("/{candidate_id}", response_model=schemas.CandidateAdminOut)
+def update_candidate(
+    candidate_id: int,
+    data: schemas.CandidateIn,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_admin_user)  # admin only
+):
+    candidate = candidate_service.get_candidate_by_id(db, candidate_id)
+    if not candidate:
+        raise HTTPException(status_code=404, detail="Candidate not found")
+
+    candidate.name = data.name
+    candidate.email = data.email
+    candidate.role_applied = data.role_applied
+    candidate.skills = data.skills or []
+    candidate.internal_notes = data.internal_notes or ""
+
+    db.commit()
+    db.refresh(candidate)
+    return schemas.CandidateAdminOut.model_validate(candidate)
+
+
+@router.patch("/{candidate_id}/status", response_model=schemas.CandidateAdminOut)
+def update_status(
+    candidate_id: int,
+    status: str = Query(..., enum=["new", "reviewing", "accepted", "rejected"]),
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_admin_user)  # admin only
+):
+    candidate = candidate_service.get_candidate_by_id(db, candidate_id)
+    if not candidate:
+        raise HTTPException(status_code=404, detail="Candidate not found")
+
+    candidate.status = status
+    db.commit()
+    db.refresh(candidate)
+    return schemas.CandidateAdminOut.model_validate(candidate)
