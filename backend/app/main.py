@@ -58,7 +58,7 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000",
         "https://techkraft-dashboard-production.up.railway.app",
-        "https://*.vercel.app",  # add your Vercel URL here after deploying
+        "https://techkraft-dashboard.vercel.app/",  # add your Vercel URL here after deploying
     ],
     allow_credentials=True,
     allow_methods=["*"],
