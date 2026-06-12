@@ -9,7 +9,7 @@ from app.services import candidate_service
 
 router = APIRouter(prefix="/api/candidates", tags=["candidates"])
 
-# A few fake AI summaries to return randomly
+#fake AI 
 MOCK_SUMMARIES = [
     "This candidate demonstrates strong technical skills and clear communication. They showed solid problem-solving ability and would likely be a good team fit.",
     "The candidate has relevant experience and performed well in assessments. Some gaps in advanced topics but shows strong learning potential.",
@@ -45,10 +45,10 @@ def get_candidate(
         raise HTTPException(status_code=404, detail="Candidate not found")
 
     if current_user.role == "admin":
-        # Admin sees all scores + internal notes
+        
         return schemas.CandidateAdminOut.model_validate(candidate)
     else:
-        # Reviewer sees only their own scores
+      
         candidate.scores = [
             s for s in candidate.scores if s.reviewer_id == current_user.id
         ]
@@ -62,7 +62,7 @@ def submit_score(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
-    # Make sure candidate exists
+ 
     candidate = candidate_service.get_candidate_by_id(db, candidate_id)
     if not candidate:
         raise HTTPException(status_code=404, detail="Candidate not found")
@@ -76,7 +76,7 @@ def submit_score(
         candidate_id=candidate_id,
         category=data.category,
         score=data.score,
-        reviewer_id=current_user.id,  # always from JWT, never from request body
+        reviewer_id=current_user.id, 
         note=data.note
     )
     return schemas.ScoreOut.model_validate(score)
@@ -92,7 +92,7 @@ async def generate_summary(
     if not candidate:
         raise HTTPException(status_code=404, detail="Candidate not found")
 
-    # Simulate async AI call with a 2 second delay
+    # Simulate async AI 
     await asyncio.sleep(2)
 
     summary = random.choice(MOCK_SUMMARIES)
@@ -104,7 +104,7 @@ def update_notes(
     candidate_id: int,
     data: schemas.NotesIn,
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_admin_user)  # admin only
+    current_user: models.User = Depends(get_admin_user) 
 ):
     candidate = candidate_service.update_notes(db, candidate_id, data.internal_notes)
     if not candidate:
@@ -116,9 +116,9 @@ def update_notes(
 def delete_candidate(
     candidate_id: int,
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_admin_user)  # admin only
+    current_user: models.User = Depends(get_admin_user)  
 ):
-    # Soft delete only — never hard delete
+    
     candidate = candidate_service.soft_delete_candidate(db, candidate_id)
     if not candidate:
         raise HTTPException(status_code=404, detail="Candidate not found")

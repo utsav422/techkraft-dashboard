@@ -1,19 +1,19 @@
 // Base URL for all API calls
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
-// Attach JWT token to every request automatically
+
 function getAuthHeader() {
   const token = localStorage.getItem("access_token");
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-// --- Auth ---
+
 
 export async function login(email, password) {
   const response = await fetch(`${API_URL}/api/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    // OAuth2 login needs form data, not JSON
+
     body: new URLSearchParams({ username: email, password }),
   });
   if (!response.ok) throw new Error("Invalid credentials");
@@ -30,10 +30,10 @@ export async function register(email, password) {
   return response.json();
 }
 
-// --- Candidates ---
+
 
 export async function getCandidates(filters = {}) {
-  // Build query string from filters object
+  
   const params = new URLSearchParams();
   if (filters.status) params.append("status", filters.status);
   if (filters.role_applied) params.append("role_applied", filters.role_applied);
